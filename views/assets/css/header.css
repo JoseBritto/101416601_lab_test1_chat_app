@@ -1,0 +1,13 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 10vh;
+    padding: 24px;
+    background-color: #f8f9fa;
+
+    button.logout {
+        background-color: #bb0505;
+        font-weight: 900;
+    }
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/login.css">
+</head>
+<body>
+
+    <header>
+        <div class="left">
+            <h1>Chat App</h1>
+        </div>
+    </header>
+    <main>
+        <h1>Please login to continue</h1>
+
+        <form id="loginForm">
+            <input aria-label="Username field" id="username" type="text" name="username" placeholder="Type your username">
+            <input aria-label="Password field" id="password" type="password" name="username" placeholder="Type your password">
+            <button type="submit">Login</button>
+        </form>
+
+
+        <p class="notice">Dont have an account? <a href="/register.html">Signup</a>now.</p>
+    </main>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); 
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                console.log(data);
+
+                if (response.ok) {
+                    alert("Login successful!");
+                    localStorage.setItem("token", data.token); 
+                    window.location.href = "/chat.html";
+                } else {
+                    alert(data.message || "Login failed");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>

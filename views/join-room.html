@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/welcome.css">
+</head>
+<body>
+
+    <header>
+        <div class="left">
+            <h1>Chat App</h1>
+        </div>
+        <div class="right">
+            <button class="logout">Logout</button>
+        </div>
+    </header>
+    <main>
+        <h1>Welcome, John!</h1>
+
+        <form>
+            <input aria-label="Enter your name" id="username" type="text" name="username" placeholder="Type your first message">
+            <select aria-label="Choose your channel" id="channel" name="channel">
+                <option value="general" selected="selected">Choose a channel</option>
+                <option value="general">Nodejs</option>
+                <option value="random">Random</option>
+                <option value="tech">Tech</option>
+                <option value="music">Music</option>
+                <option value="gaming">Gaming</option>
+            </select>
+            <button disabled="disabled" type="submit">Join the discussion!</button>
+        </form>
+
+    </main>
+
+</body>
+</html>

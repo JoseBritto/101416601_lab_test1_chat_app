@@ -1,0 +1,57 @@
+@import "header.css";
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 89vh;
+    background-color: #f8f9fa;
+    flex-direction: column;
+    gap: 10%;
+}
+
+
+input[type=text], input[type=password] {
+    padding: 14px 28px;
+    border: 2px solid black;
+    border-radius: 80px;
+    background: #f8f9fa;
+    outline: none;
+    margin: 0;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+select {
+    padding: 10px 20px;
+    border: 2px solid black;
+    border-radius: 80px;
+    background: #f8f9fa;
+    outline: none;
+    appearance: none;
+}
+
+.notice{
+    position: absolute;
+    bottom: 40px;
+    font-weight: 700;
+}
+
+.notice a {
+    all: unset;
+    text-decoration: underline;
+    font-weight: 900;
+    color: black;
+    display: inline-block;
+    border: 2px solid transparent;
+    padding: 0 4px;
+}
+
+.notice a:hover, .notice a:focus-visible {
+    cursor: pointer;
+    border: 2px solid black;
+}

@@ -1,0 +1,35 @@
+@import "header.css";
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 89vh;
+    background-color: #f8f9fa;
+    flex-direction: column;
+    gap: 20%;
+}
+
+
+input[type=text] {
+    padding: 10px 20px;
+    border: 2px solid black;
+    border-radius: 80px;
+    background: #f8f9fa;
+    outline: none;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+select {
+    padding: 10px 20px;
+    border: 2px solid black;
+    border-radius: 80px;
+    background: #f8f9fa;
+    outline: none;
+    appearance: none;
+}
