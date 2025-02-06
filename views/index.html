@@ -5,32 +5,109 @@
     <title>Chat App</title>
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="stylesheet" href="assets/css/chat.css">
 </head>
 <body>
 
     <script>
-        if(localStorage.getItem('token') === null) {
+        const id = localStorage.getItem('id');
+        const token = localStorage.getItem('token');
+        if(id === null || token === null) {
             window.location.href = "/login.html";
         }
     </script>
 
     <header>
         <div class="left">
-            <h1>#Nodejs</h1>
+            <h1>#<span id="cname">nodejs</span></h1>
         </div>
         <div class="right">
             <button style="display: flex; flex-direction: row; align-items: center; justify-content: center;"
-            class="logout"><span style="margin-right: 4px;">Exit</span> <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="24px" fill="#F8F8F8"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg></button>
+            class="logout" id="exit"><span style="margin-right: 4px;">Exit</span> <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="24px" fill="#F8F8F8"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg></button>
         </div>
     </header>
     <main>
-        <div class="chat-container" style="margin-top: auto;">
-            <div id="chat-box"></div>
+        <div class="chat-container">
+            <div id="chat-box">
+                <div class="message self">
+                    <div class="author">You</div>
+                    <div class="text">Hello World! This is my first message</div>
+                </div>
+            </div>
             <form id="messageForm">
                 <input style="width: 80vw;" type="text" id="messageInput" placeholder="Type a message..." required>
                 <button type="submit">Send</button>
             </form>
         </div>
     </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const exitBtn = document.getElementById('exit');
+        console.log(exitBtn);
+        exitBtn.onclick = () => {
+            console.log('bye..');
+            window.location = '/join-room.html';
+        }
+
+        const socket = io();
+
+        let rand = Math.floor(Math.random() * 2554455);
+
+        let currentChannel = "general";
+        const cname = document.getElementById('cname');
+
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const channel = urlParams.get("channel") || "general"; // Default to "general" if no channel is provided
+            changeChannel(channel);
+        };
+
+
+        document.getElementById("messageForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                socket.emit("chat message", { channel: currentChannel, text: message, user_id: id, rand: rand });
+                addMessage("You", message, true);
+                messageInput.value = "";
+            }
+        });
+
+        function addMessage(author, text, isSelf) {
+            const chatBox = document.getElementById("chat-box");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message");
+            if (isSelf) messageDiv.classList.add("self");
+            
+            messageDiv.innerHTML = `
+                <div class="author">${author}</div>
+                <div class="text">${text}</div>
+            `;
+            
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
+        }
+
+
+        function changeChannel(newChannel) {
+            currentChannel = newChannel;
+            document.getElementById("chat-box").innerHTML = ""; 
+            cname.innerText = newChannel;
+
+            
+            socket.emit("join channel", newChannel);
+
+            socket.on("chat message", function(data) {
+                console.log(data);
+                if (data.channel === currentChannel && data.rand !== rand) {
+                    addMessage(data.author, data.text, false);
+                }
+            });
+        }
+
+    </script>
 </body>
 </html>

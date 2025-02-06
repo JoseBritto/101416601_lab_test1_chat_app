@@ -1,5 +1,6 @@
 const express = require('express');
-const socketio = require('socket.io');
+const { Server } = require("socket.io");
+const userModel = require('./models/User');
 const mongoose = require("mongoose");
 
 require("dotenv").config();
@@ -27,41 +28,36 @@ const server = app.listen(SERVER_PORT, () => {
     console.log('Server running on http://localhost:'+ SERVER_PORT);
 });
 
-let ioServer = socketio(server);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 
-ioServer.on("connection", (socket) => {
-    console.log('Connection Received');
-    console.log(`Client Socket ID: ${socket.id}`);
+io.on("connection", (socket) => {
+    console.log("A user connected:", socket.id);
 
-    socket.on('disconnect', () => {
-        console.log(`Client Disconnected: ${socket.id}`);
+    socket.on("join channel", (channel) => {
+        socket.leaveAll();
+        socket.join(channel);
+        console.log(`${socket.id} joined channel: ${channel}`);
     });
 
-    socket.on('hello', (msg) => {
-        console.log(`Hello from: ${msg}`);
-        const obj = {
-            status: true,
-            id: socket.id,
-            msg: 'Welcome to chat server'
+    socket.on("chat message", async ({ channel, text, user_id, rand }) => {
+        console.log(user_id);
+        const user = await userModel.findOne({ _id: user_id });
+        let username = 'Glitch';
+        if(user) {
+            username = `${user.firstname || 'NoName'} (@${user.username})`;
         }
-        socket.emit('welcome', obj);
+        const messageData = { author: username, channel, text, rand };
+
+        // Broadcast message to channel
+        socket.to(channel).emit("chat message", messageData);
     });
 
-    socket.on('chat_message', (message) => {
-        console.log(`New message received: ${socket.id} || ${message}`);
-        //ioServer.emit('new_message', message); // to all clients
-
-        socket.broadcast.emit('new_message', message); // to all others
+    socket.on("disconnect", () => {
+        console.log("User disconnected:", socket.id);
     });
-
-    socket.on('join_group', (group_name) => {
-        socket.join(group_name);
-        ioServer.to(group_name).emit('new_message', 'world');
-    });
-
-
-    socket.on('leave_group', (group_name) => {
-        socket.leave(group_name);
-    });
-
 });
