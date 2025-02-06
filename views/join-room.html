@@ -13,26 +13,68 @@
             <h1>Chat App</h1>
         </div>
         <div class="right">
-            <button class="logout">Logout</button>
+            <button id="logout" class="logout" onclick="logout()">Logout</button>
         </div>
     </header>
     <main>
-        <h1>Welcome, John!</h1>
+        <h1>Welcome, <span id="fname">Anon</span>!</h1>
 
-        <form>
-            <input aria-label="Enter your name" id="username" type="text" name="username" placeholder="Type your first message">
-            <select aria-label="Choose your channel" id="channel" name="channel">
-                <option value="general" selected="selected">Choose a channel</option>
-                <option value="general">Nodejs</option>
-                <option value="random">Random</option>
-                <option value="tech">Tech</option>
-                <option value="music">Music</option>
-                <option value="gaming">Gaming</option>
-            </select>
-            <button disabled="disabled" type="submit">Join the discussion!</button>
-        </form>
+        <div class="forms">
+            <form>
+                <input aria-label="Enter your name" id="username" type="text" name="username" placeholder="Type a username to DM">
+                <button disabled="disabled" type="submit">Start chatting!</button>
+            </form>
+            <div>
+                OR
+            </div>
+            <form>
+                <select aria-label="Choose your channel" id="channel" name="channel">
+                    <option value="general" selected="selected">Choose a channel</option>
+                    <option value="general">Nodejs</option>
+                    <option value="random">Random</option>
+                    <option value="tech">Tech</option>
+                    <option value="music">Music</option>
+                    <option value="gaming">Gaming</option>
+                </select>
+                <button disabled="disabled" type="submit">Join the discussion!</button>
+            </form>
+        </div>
 
     </main>
+
+    <script>
+        window.onload = async () => {
+            const fname = document.getElementById("fname");
+            const id = localStorage.getItem('id');
+            const token = localStorage.getItem('token');
+
+            if(!id || !token) {
+                window.location.href = '/login.html';
+            }
+
+            const response = await fetch("/api/auth/user/" + id, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                fname.innerText = data.firstname || 'Hecker';
+            } else {
+                window.location.href = '/login.html';
+            }
+        };
+
+        function logout() {
+            localStorage.removeItem('id');
+            localStorage.removeItem('token');
+            window.location.reload();
+        }
+    </script>
 
 </body>
 </html>

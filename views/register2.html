@@ -16,13 +16,84 @@
     <main>
         <h1>Let's get to know you better</h1>
 
-        <form>
+        <form id="registerForm">
             <input aria-label="First Name" id="firstname" type="text" name="firstname" placeholder="Enter your first name">
             <input aria-label="last Name" id="lastname" type="text" name="lastname" placeholder="Enter your last name">
             <button type="submit">Let's Go!</button>
         </form>
 
+        <p class="notice"></p>
     </main>
+
+    <script>
+        const notice = document.querySelector(".notice");
+        const noticeInner = notice.innerHTML;
+        
+        document.getElementById("registerForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+
+            const firstname = document.getElementById("firstname").value;
+            const lastname = document.getElementById("lastname").value;
+        
+            if (!firstname || !lastname) {
+                notice.innerHTML = "Please fill out the fields!";
+                notice.classList.add("error");
+
+                setTimeout(() => {
+                    notice.innerHTML = noticeInner;
+                    notice.classList.remove("error");
+                }, 5000);
+
+                return;
+            }
+
+            try {
+                const id = localStorage.getItem('id');
+                const response = await fetch("/api/auth/addinfo", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ id: id, firstname: firstname, lastname: lastname })
+                });
+
+                const data = await response.json();
+
+                console.log(data);
+
+                if (response.ok) {
+                    window.location.href = "/join-room.html";
+                } else {
+                    const msg = data.message || "Operation failed";
+
+                    notice.innerHTML = msg;
+                    notice.classList.add("error");
+
+                    setTimeout(() => {
+                        notice.innerHTML = noticeInner;
+                        notice.classList.remove("error");
+                    }, 5000);
+
+                    return;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+
+                const msg = "A network error occurred. Please try again";
+
+                notice.innerHTML = msg;
+                notice.classList.add("error");
+
+                setTimeout(() => {
+                    notice.innerHTML = noticeInner;
+                    notice.classList.remove("error");
+                }, 5000);
+
+                return;
+            }
+        });
+    </script>
 
 </body>
 </html>

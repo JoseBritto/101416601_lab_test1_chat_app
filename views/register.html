@@ -16,7 +16,7 @@
     <main>
         <h1>Create a new account</h1>
 
-        <form>
+        <form id="registerForm">
             <input aria-label="Username field" id="username" type="text" name="username" placeholder="Choose a username">
             <input aria-label="Password field" id="password" type="password" name="username" placeholder="Enter a password">
             <input aria-label="Password field" id="confirm-password" type="password" name="username" placeholder="Confirm password">
@@ -26,6 +26,78 @@
 
         <p class="notice">Already have an account? <a href="/login.html">Login</a>instead.</p>
     </main>
+
+    <script>
+        const notice = document.querySelector(".notice");
+        const noticeInner = notice.innerHTML;
+        
+        document.getElementById("registerForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm-password").value;
+        
+            if (password !== confirmPassword) {
+                notice.innerHTML = "Passwords do not match!";
+                notice.classList.add("error");
+
+                setTimeout(() => {
+                    notice.innerHTML = noticeInner;
+                    notice.classList.remove("error");
+                }, 5000);
+
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/auth/signup", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                console.log(data);
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('id', data.user_id);
+                    window.location.href = "/register2.html";
+                } else {
+                    const msg = data.message || "Registration failed";
+
+                    notice.innerHTML = msg;
+                    notice.classList.add("error");
+
+                    setTimeout(() => {
+                        notice.innerHTML = noticeInner;
+                        notice.classList.remove("error");
+                    }, 5000);
+
+                    return;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+
+                const msg = "A network error occurred. Please try again";
+
+                notice.innerHTML = msg;
+                notice.classList.add("error");
+
+                setTimeout(() => {
+                    notice.innerHTML = noticeInner;
+                    notice.classList.remove("error");
+                }, 5000);
+
+                return;
+            }
+        });
+    </script>
 
 </body>
 </html>

@@ -13,11 +13,11 @@ app.post('/signup', async (req, res) => {
 
     const userData = req.body;
     userData.createdOn = Date.now().toString();
-    
+
     try {
         const user = new userModel(userData);
         const newUser = await user.save()
-        res.send({"message": "User created successfully", "user_id":newUser._id});
+        res.send({"user_id": newUser._id, "token": newUser._id });
     }
     catch(err) {
         res.status(500).send({message: err.message});
@@ -61,7 +61,7 @@ app.post('/login',  (req, res) => {
         .then(user => {
             if (user) {
                 if (data.password == user.password) {
-                    res.send({user_id: user._id});
+                    res.send({user_id: user._id, token: user._id});
                 } else {
                     res.status(401).send({message: "Wrong Password"});
                 }

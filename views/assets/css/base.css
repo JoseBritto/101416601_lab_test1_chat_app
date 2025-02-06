@@ -23,3 +23,12 @@ input {
   font-size: 1em;
   font-weight: 400;
 }
+
+.error {
+  transition: all 0.2s;
+}
+
+p.error {
+  transform: scale(1.5);
+  color: red;
+}

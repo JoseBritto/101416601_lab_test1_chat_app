@@ -23,6 +23,7 @@ form{
     display: flex;
     flex-direction: column;
     gap: 24px;
+    width: 30vw;
 }
 
 select {
@@ -32,4 +33,13 @@ select {
     background: #f8f9fa;
     outline: none;
     appearance: none;
+}
+
+
+.forms {
+    width: 80vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
 }
